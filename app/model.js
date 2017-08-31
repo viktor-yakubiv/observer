@@ -12,6 +12,8 @@ import {
 
 export default class Model {
   static filter(repos, { type, lang, stars }) {
+    if (!repos) return repos;
+
     return repos.filter((repo) => {
       const typeMatch = type === REPO_ANY ||
         (type === REPO_FORK && repo.fork) ||
@@ -24,6 +26,8 @@ export default class Model {
   }
 
   static sort(repos, prop, dir = 1) {
+    if (!repos) return;
+
     const compareMap = {};
 
     compareMap[PROP_UPDATED] = (a, b) =>
@@ -59,7 +63,13 @@ export default class Model {
     this.present = this.present.bind(this);
   }
 
-  present(data, render = this.render) {
+  async present(data, render = this.render) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('%cPRESENT', 'color: green;', data);
+    }
+
+    this.updates = {};
+
     if (!data) return;
 
     if (data.owner || data.repos) {
@@ -68,6 +78,22 @@ export default class Model {
 
       this.data.repos = data.repos || null;
       this.updates.repos = true;
+    }
+
+    if (data.repo && this.data.repos) {
+      const repo = this.data.repos.find(({ fullName }) =>
+        (data.repo.fullName === fullName));
+
+      if (process.env.DEBUG) {
+        console.log('%cREPO', 'color: brown;', repo);
+      }
+
+      if (repo) {
+        Object.assign(repo, data.repo);
+
+        this.data.dialog = repo;
+        this.updates.dialog = true;
+      }
     }
 
     if (data.filters) {
@@ -87,6 +113,10 @@ export default class Model {
 
     if (this.updates.repos || this.updates.sort) {
       Model.sort(this.data.repos, this.data.sort);
+    }
+
+    if (process.env.DEBUG) {
+      console.log('%cMODEL', 'color: brown;', this);
     }
 
     render(this);

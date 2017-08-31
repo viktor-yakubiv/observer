@@ -1,0 +1,37 @@
+h1: a(href=htmlUrl)= name
+
+if fork
+  p: a(href=parent.htmlUrl)= parent.fullName
+
+
+section#contributors
+  h2 Contributors
+
+  if contributors
+    ul
+      each contrib in contributors.slice(3)
+        li= contrib.username
+  else
+    p No one has contributed to this project
+
+
+section#languages
+  h2 Languages
+
+  if languages
+    ul
+      each count, lang in languages
+        li= lang
+  else
+    p No languages specified
+
+
+section#pull-requests
+  h2 Pull Requests
+
+  if pulls
+    ul
+      each pull in pulls.slice(5)
+        li= pull
+  else
+    p No pull requests

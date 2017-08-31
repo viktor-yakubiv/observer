@@ -1,11 +1,18 @@
-export function ready() {
+function ready() {
   return true;
 }
 
-export function owner() {
-  return true;
+function owner({ data }) {
+  return data.owner && data.repos &&
+    (typeof data.owner === 'object') && (typeof data.repos === 'object');
 }
 
-export function repo() {
-  return true;
+function dialog({ data }) {
+  return data.dialog;
 }
+
+export {
+  dialog,
+  owner,
+  ready,
+};

@@ -4,7 +4,7 @@ import * as view from '../view';
 
 function representation(model) {
   const state = Object.values(states).find(s => s(model));
-  const repr = view[state.name](model.data);
+  const repr = view[state.name](model.data, model.present);
 
   view.display(repr);
 }

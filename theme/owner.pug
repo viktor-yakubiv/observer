@@ -1,0 +1,15 @@
+div
+  h2.owner-name= owner.name
+  dl
+    dt.screen-readers Login
+    dd= owner.login
+
+div
+  ul.card-list
+    each repo in repos
+      li.card(data-key=repo.fullName)
+        h3.card-title
+          a(
+            href=`./${repo.name}`,
+            title=`See details of ${repo.name}`
+          )= repo.name
