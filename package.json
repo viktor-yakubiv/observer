@@ -7,7 +7,7 @@
   "author": "Viktor Yakubiv (www.yakubiv.com)",
   "license": "MIT",
   "scripts": {
-    "start": "webpack-dev-server --inline --open"
+    "start": "webpack-dev-server --inline --hot --open"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

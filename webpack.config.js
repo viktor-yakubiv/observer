@@ -11,6 +11,7 @@ module.exports = {
   output: {
     filename: 'js/app.js',
     path: path.join(__dirname, 'tmp'),
+    publicPath: (process.env.NODE_ENV === 'production') ? '/observer/' : '/',
   },
 
   module: {
@@ -48,4 +49,9 @@ module.exports = {
   ],
 
   devtool: process.env === 'production' ? null : 'source-map',
+
+  devServer: {
+    port: 3000,
+    historyApiFallback: true,
+  },
 };

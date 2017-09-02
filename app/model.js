@@ -58,7 +58,7 @@ export default class Model {
       sort: null,
     };
 
-    this.updates = {};
+    this.updates = { init: true };
 
     this.present = this.present.bind(this);
   }
@@ -105,6 +105,12 @@ export default class Model {
           this.updates.filters = true;
         }
       });
+    }
+
+    // TODO: Remove in case of pure usage of present method
+    if (data.init) {
+      this.data = data.init;
+      this.updates.init = true;
     }
 
     if (this.updates.repos || this.updates.filters) {

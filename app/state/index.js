@@ -1,5 +1,6 @@
 import * as states from './states';
 import * as view from '../view';
+import { updateRoute } from '../router';
 
 
 function representation(model) {
@@ -18,5 +19,6 @@ function representation(model) {
 // eslint-disable-next-line
 export async function render(model) {
   representation(model);
+  updateRoute(model);
   // nextAction(model);
 }

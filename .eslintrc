@@ -4,6 +4,7 @@
     "no-console": 0
   },
   "globals": {
+    "window": true,
     "document": true,
     "fetch": true
   }
