@@ -1,15 +1,96 @@
-div
+div.owner
   h2.owner-name= owner.name
   dl
     dt.screen-readers Login
     dd= owner.login
 
-div
-  ul.card-list
-    each repo in repos
-      li.card(data-key=repo.fullName)
-        h3.card-title
-          a(
-            href=`./${repo.name}`,
-            title=`See details of ${repo.name}`
-          )= repo.name
+div.repos
+  div.repos-sidebar
+    aside#filters
+      h3 Filters
+      form.filter-list(action='.')
+        div.form-group
+          label(for='filter-issues')
+            input#filter-issues(
+              type='checkbox',
+              name='has_open_issues',
+              checked=filters.hasOpenIssues
+            )
+            | has open issues
+        div.form-group
+          label(for='filter-topics')
+            input#filter-topics(
+              type='checkbox',
+              name='has_topics',
+              checked=filters.hasTopics
+            )
+            | has topics
+        div.form-group
+          label(for='filter-stars') Starred more than
+          input#filter-stars(
+            type='number',
+            name='starred_gt',
+            min='0',
+            value=filters.starredGt,
+          )
+        div.form-group
+          label(for='filter-updated') Updated after
+          input#filter-updated(
+            type='date',
+            name='updated_after',
+            value=filters.updatedAfter,
+            placeholder='A date',
+          )
+        div.form-group
+          label(for='filter-type')
+          select#filter-type(name='type')
+            option(value='all') Any
+            option(value='fork') Fork
+            option(value='source') Source
+        div.form-group
+          label(for='filter-lang')
+          select#filter-lang(name='language')
+            option(value='', disabled, selected) Language
+            each lang in languages || []
+              option(value=lang)= lang
+    aside#sorting
+      h3 Sorting
+      form
+        label.sr-only(for='sort-criteria')
+        select#sort-criteria(name='sort')
+          option(value='', disabled, selected) Sort criteria
+          - const sortMap = {
+          -   name: 'Name',
+          -   stargazersCount: 'Stars count',
+          -   issueCount: 'Issue count',
+          -   updatedAt: 'Update date',
+          - }
+          each title, value in sortMap
+            option(
+              value=value,
+              selected=(sort === value),
+            )= title
+  div.repos-content
+    ul.card-list
+      each repo in repos.used
+        li.card(data-key=repo.fullName)
+          h3.card-title
+            a(
+              href=`./${repo.name}`,
+              title=`See details of ${repo.name}`
+            )= repo.name
+
+          p.card-description= repo.description
+
+          ul.card-meta
+            li
+              span.sr-only Language
+              span= repo.language
+            li(style='text-align: center;')
+              span.icon.icon-star
+              span.sr-only Stars
+              span= repo.stargazersCount
+            li(style='text-align: right;')
+              span.sr-only Updated At
+              - const date = repo.updatedAt.toLocaleString('en')
+              span= date.slice(0, date.indexOf(','))

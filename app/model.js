@@ -11,17 +11,28 @@ import {
 
 
 export default class Model {
-  static filter(repos, { type, lang, stars }) {
+  static filter(repos, filters) {
     if (!repos) return repos;
 
-    return repos.filter((repo) => {
-      const typeMatch = type === REPO_ANY ||
-        (type === REPO_FORK && repo.fork) ||
-        (type === REPO_SOURCE && !repo.fork);
+    const updatedAfter = new Date(filters.updatedAfter).getTime();
 
-      return typeMatch &&
-        repo.startgazes_count >= stars &&
-        (!lang || repo.language === lang);
+    return repos.filter((repo) => {
+      const mathings = {
+        type:
+          (filters.type === REPO_ANY) ||
+          (filters.type === REPO_FORK && repo.fork) ||
+          (filters.type === REPO_SOURCE && !repo.fork),
+        starCount:
+          repo.stargazersCount >= filters.starredGt,
+        updatedAfter:
+          repo.updatedAt.getTime() >= updatedAfter,
+        language:
+          (!filters.language || repo.language === filters.language),
+        issueCount:
+          (repo.openIssuesCount > 0) === filters.hasOpenIssues,
+      };
+
+      return Object.values(mathings).reduce((res, val) => (res && val));
     });
   }
 
@@ -46,13 +57,22 @@ export default class Model {
 
     this.data = {
       owner: null,
-      repos: null,
+      repos: {
+        fetched: [],
+        next: null,
+
+        used: [],
+      },
       dialog: null,
 
       filters: {
         type: REPO_ANY,
-        lang: null,
-        stars: 0,
+        language: null,
+        updatedAfter: null,
+        starredGt: 0,
+
+        hasOpenIssues: false,
+        hasTopics: false,
       },
 
       sort: null,
@@ -72,17 +92,32 @@ export default class Model {
 
     if (!data) return;
 
-    if (data.owner || data.repos) {
+    if (data.owner) {
       this.data.owner = data.owner || this.data.owner;
       this.updates.owner = true;
 
-      this.data.repos = data.repos || null;
+      this.data.repos = {
+        fetched: [],
+        next: null,
+
+        used: [],
+      };
       this.updates.repos = true;
     }
 
-    if (data.repo && this.data.repos) {
-      const repo = this.data.repos.find(({ fullName }) =>
-        (data.repo.fullName === fullName));
+    if (data.repos) {
+      this.data.repos.fetched = this.data.repos.fetched
+        .concat(data.repos.map(repo => Object.assign(repo, {
+          updatedAt: new Date(repo.updatedAt),
+          createdAt: new Date(repo.createdAt),
+        })));
+      this.data.repos.next = data.next || null;
+      this.updates.repos = true;
+    }
+
+    if (data.repo && this.data.repos.fetched) {
+      const repo = this.data.repos.fetched
+        .find(({ fullName }) => (data.repo.fullName === fullName));
 
       if (process.env.DEBUG) {
         console.log('%cREPO', 'color: brown;', repo);
@@ -90,6 +125,9 @@ export default class Model {
 
       if (repo) {
         Object.assign(repo, data.repo);
+
+        repo.updatedAt = new Date(repo.updatedAt);
+        repo.createdAt = new Date(repo.createdAt);
 
         this.data.dialog = repo;
         this.updates.dialog = true;
@@ -107,6 +145,11 @@ export default class Model {
       });
     }
 
+    if (data.sort) {
+      this.data.sort = data.sort;
+      this.updates.sort = true;
+    }
+
     // TODO: Remove in case of pure usage of present method
     if (data.init) {
       this.data = data.init;
@@ -114,15 +157,17 @@ export default class Model {
     }
 
     if (this.updates.repos || this.updates.filters) {
-      Model.filter(this.data.repos, this.data.filters);
+      const { repos, filters } = this.data;
+
+      repos.used = Model.filter(repos.fetched, filters);
     }
 
-    if (this.updates.repos || this.updates.sort) {
-      Model.sort(this.data.repos, this.data.sort);
+    if (this.updates.repos || this.updates.filters || this.updates.sort) {
+      Model.sort(this.data.repos.used, this.data.sort);
     }
 
-    if (process.env.DEBUG) {
-      console.log('%cMODEL', 'color: brown;', this);
+    if (process.env.NODE_ENV === 'development') {
+      console.log('%cMODEL', 'color: green;', this);
     }
 
     render(this);

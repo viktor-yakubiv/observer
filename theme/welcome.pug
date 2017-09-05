@@ -1,10 +1,16 @@
-h1 Welcome
-form.welcome-form(action='./', onsubmit='')
-  input(
-    type='search',
-    name='owner',
-    value=owner,
-    placeholder='e.g. viktor-yakubiv',
-    required
-  )
-  button(type='submit') Search
+.welcome
+  header.welcome-header
+    h1.welcome-logo
+      img(src=require('../images/github-logo.svg'), alt='GitHub')
+      span Observer
+
+  form.welcome-form(action='./', onsubmit='')
+    label.sr-only Owner name
+    input.welcome-control.expand(
+      type='search',
+      name='owner',
+      value=owner,
+      placeholder='e.g. viktor-yakubiv',
+      required
+    )
+    input.welcome-control(type='submit', value='Search')

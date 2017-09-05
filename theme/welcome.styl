@@ -1,0 +1,57 @@
+.welcome
+  margin: 0 auto
+  padding: 1rem 0
+  max-width: 600px
+  min-height: 100%
+
+.welcome-header
+  margin: 0 0 1rem
+
+.welcome-logo
+  margin: 0 auto
+  max-width: 50%
+  font-size: 1.5rem
+  font-weight: 400
+
+  img
+    display: block
+    margin: 0
+    width: 100%
+    height: auto
+
+  span
+    display: block
+    text-align: right
+    text-transform: uppercase
+
+// TODO: Move to global conf
+$radius = 3px
+.sr-only
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+  border: 0;
+
+.welcome-form
+  display: flex
+  box-shadow: 0 2px 4px rgba(0,0,0,.15)
+
+.welcome-control
+  display: block
+  margin: 0 -1px 0 0
+  padding: .5rem
+  border: 1px solid #000
+  font: 1rem sans-serif
+
+  &.expand
+    flex: 1 1 auto
+  &:first-of-type
+    border-radius: $radius 0 0 $radius
+  &:last-of-type
+    border-radius: 0 $radius $radius 0
+    margin-right: 0

@@ -1,4 +1,6 @@
+import camelize from 'camelize';
 import * as api from './api';
+import * as config from '../config';
 import { parseLocation } from '../router';
 
 
@@ -34,12 +36,26 @@ export async function openRepo(name, present = this.present) {
   });
 }
 
-export async function filter({ param, value }, present = this.present) {
+export async function filter({ type, name, value, checked },
+  present = this.present,
+) {
   const filters = {};
 
-  filters[param] = value;
+  if (name === 'type') {
+    filters[name] = ({
+      all: config.REPO_ANY,
+      fork: config.REPO_FORK,
+      source: config.REPO_SOURCE,
+    })[name];
+  } else if (type === 'number') {
+    filters[name] = +value;
+  } else if (type === 'checkbox') {
+    filters[name] = checked;
+  } else {
+    filters[name] = value;
+  }
 
-  present(filters);
+  present(camelize({ filters }));
 }
 
 export async function sort(prop, present = this.present) {

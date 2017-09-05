@@ -2,6 +2,7 @@
 const path = require('path');
 const webpack = require('webpack');
 
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 
@@ -27,10 +28,32 @@ module.exports = {
           },
         },
       },
+
       {
         test: /\.pug$/,
         use: {
           loader: 'pug-loader',
+        },
+      },
+
+      {
+        test: /\.styl$/,
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: [
+            'css-loader',
+            'stylus-loader',
+          ],
+        }),
+      },
+
+      {
+        test: /\.(svg|png)$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: 'images/[name].[ext]',
+          },
         },
       },
     ],
@@ -42,8 +65,11 @@ module.exports = {
       DEBUG: false,
     }),
 
+    new ExtractTextPlugin('css/all.css'),
+
     new HtmlWebpackPlugin({
       title: 'GitHub Observer',
+      template: 'theme/base.pug',
       hash: true,
     }),
   ],

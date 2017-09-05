@@ -37,6 +37,20 @@ export function owner(data, present) {
             actions.openRepo(card.getAttribute('data-key'), present);
           });
       });
+
+      parentElement
+        .querySelectorAll('#filters input, #filters select')
+        .forEach((input) => {
+          input.addEventListener('change', () => {
+            actions.filter(input, present);
+          });
+        });
+
+      parentElement
+        .querySelector('#sort-criteria')
+        .addEventListener('change', (event) => {
+          actions.sort(event.target.value, present);
+        });
     },
 
     toString() {
@@ -49,7 +63,7 @@ export function dialog(data) {
   return {
     html: theme.repo(data.dialog),
 
-    intent: (parentElement) => {
+    intent: () => {
       //
     },
 
