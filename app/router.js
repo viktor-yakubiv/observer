@@ -1,7 +1,9 @@
 const history = window.history;
 
 export function parseLocation({ pathname }) {
-  const [, owner, repo] = pathname.split('/');
+  // eslint-disable-next-line
+  const route = pathname.slice(0, __webpack_public_path__.length);
+  const [owner, repo] = route.split('/');
 
   return {
     owner,
@@ -11,9 +13,10 @@ export function parseLocation({ pathname }) {
 
 export function renderRoute(model) {
   const { owner, dialog } = model.data;
-  let path = '';
+  // eslint-disable-next-line
+  let path = __webpack_public_path__;
 
-  if (owner) path += `/${owner.login}`;
+  if (owner) path += `${owner.login}`;
   if (dialog) path += `/${dialog.name}`;
 
   return path;
