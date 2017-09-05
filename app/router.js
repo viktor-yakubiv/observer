@@ -16,7 +16,7 @@ export function renderRoute(model) {
   // eslint-disable-next-line
   let path = __webpack_public_path__;
 
-  if (owner) path += `${owner.login}`;
+  if (owner) path += owner.login;
   if (dialog) path += `/${dialog.name}`;
 
   return path;

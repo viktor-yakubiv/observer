@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
-    "camelize": "^1.0.0"
+    "camelize": "^1.0.0",
+    "compression-webpack-plugin": "^1.0.0"
   }
 }

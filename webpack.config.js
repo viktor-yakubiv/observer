@@ -3,10 +3,10 @@ const path = require('path');
 const webpack = require('webpack');
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlPlugin = require('html-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
 
-
-module.exports = {
+const webpackConfig = {
   entry: ['babel-polyfill', './index.js'],
 
   output: {
@@ -67,7 +67,7 @@ module.exports = {
 
     new ExtractTextPlugin('css/all.css'),
 
-    new HtmlWebpackPlugin({
+    new HtmlPlugin({
       title: 'GitHub Observer',
       template: 'theme/base.pug',
       hash: true,
@@ -81,3 +81,18 @@ module.exports = {
     historyApiFallback: true,
   },
 };
+
+if (process.env.NODE_ENV === 'production') {
+  webpackConfig.plugins.push(
+    new webpack.optimize.UglifyJsPlugin(),
+    new CompressionPlugin({
+      asset: '[path].gz',
+      algorithm: 'gzip',
+      test: /\.js$|\.css$|\.html$/,
+      threshold: 10240,
+      minRatio: 0.8,
+    }),
+  );
+}
+
+module.exports = webpackConfig;

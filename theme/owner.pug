@@ -76,8 +76,8 @@ div.repos
         li.card(data-key=repo.fullName)
           h3.card-title
             a(
-              href=`./${repo.name}`,
-              title=`See details of ${repo.name}`
+              href='./' + repo.name,
+              title='See details of ' + repo.name
             )= repo.name
 
           p.card-description= repo.description

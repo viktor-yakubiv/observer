@@ -1,7 +1,7 @@
-import { MOUNT_ELEMENT_ID } from '../config';
+import { MOUNT_ELEMENT_ID } from './config';
 // import * as intents from './intents';
-import * as actions from '../actions';
-import * as theme from '../../theme';
+import * as actions from './actions';
+import * as theme from '../theme';
 
 
 export function ready(data, present) {
