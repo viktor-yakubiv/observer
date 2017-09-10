@@ -1,7 +1,6 @@
 import camelize from 'camelize';
-import { API_URL } from '../config';
 
-export default class GitHubApi {
+export default class Api {
   static prepareUrl(resource, params, rootUrl) {
     let url = rootUrl ? `${rootUrl}/${resource}` : resource;
 
@@ -29,7 +28,12 @@ export default class GitHubApi {
     this.rootUrl = rootUrl;
   }
 
-  call(resource, params, rootUrl = this.rootUrl) {
-    return fetch(GitHubApi.prepareUrl(resource, params, rootUrl));
+  raw(resource, params, rootUrl = this.rootUrl) {
+    return fetch(Api.prepareUrl(resource, params, rootUrl));
+  }
+
+  get(resource, params, rootUrl = this.rootUrl) {
+    return this.raw(resource, params, rootUrl)
+      .then(Api.processResponse);
   }
 }

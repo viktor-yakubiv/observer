@@ -130,3 +130,65 @@ export default class GitHubClientModel {
     render(this.state, this.present);
   }
 }
+
+function present(data, render) {
+  const { api, state } = this;
+  const updates = {};
+
+  if (data.owner) {
+    if (typeof data.owner === 'string') {
+      api.fetchOwner(data.owner)
+        .then(owner => this.present({ owner }))
+        .catch(error => this.present({
+          error,
+          resource: 'owner',
+          request: data.owner,
+        }));
+
+      state.requests.add('owner');
+    } else {
+      state.owner = data.owner;
+      state.repos = {
+        fetched: [],
+        nextPage: 1,
+
+        used: [],
+      };
+      state.requests.remove('owner');
+      updates.owner = true;
+
+      api.fetchRepos(state.owner.login, state.owner)
+        .then(repos => this.present({ repos }))
+        .catch(error => this.present({
+          error,
+          resource: 'repos',
+          request: data.owner.login,
+        }));
+
+      state.requests.add('repos');
+    }
+  }
+
+  if (data.repos) {
+    state.repos = data.repos;
+    state.repos.nextPage = data.repos.fetched.length < state.owner.publicRepos
+      ? state.repos.nextPage + 1
+      : null;
+    state.requests.remove('repos');
+
+    updates.repos = true;
+  }
+
+  if (data.filter) {
+    const { name, value } = data.filter;
+
+    if (Object.prototype.hasOwnProperty.call(state.filters, name)) {
+      state.filters[name] = value;
+      updates.filters = true;
+    }
+  }
+
+  if (data.sort) {
+    const { param, dir } = data.sort;
+  }
+}
