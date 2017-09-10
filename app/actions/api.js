@@ -1,41 +1,35 @@
 import camelize from 'camelize';
 import { API_URL } from '../config';
 
-export function call(resource, params) {
-  return fetch(`${API_URL}/${resource}`, params)
-    .then(response => response.json())
-    .then(object => Promise.resolve(camelize(object)));
-}
+export default class GitHubApi {
+  static prepareUrl(resource, params, rootUrl) {
+    let url = rootUrl ? `${rootUrl}/${resource}` : resource;
 
-export function fetchUser(name) {
-  return this.call(`users/${name}`);
-}
+    if (params) {
+      url += Object.keys(params)
+        .map((key) => {
+          const keyEncoded = encodeURIComponent(key);
+          const valEncoded = encodeURIComponent(params[key]);
 
-export function fetchOrg(name) {
-  return this.call(`orgs/${name}`);
-}
+          return `${keyEncoded}=${valEncoded}`;
+        })
+        .join('&');
+    }
 
-export function fetchUserRepos(name) {
-  return this.call(`users/${name}/repos`);
-}
+    return url;
+  }
 
-export function fetchOrgRepos(name) {
-  return this.call(`orgs/${name}/repos`);
-}
+  static processResponse(response) {
+    return response.json()
+      .then(object => Promise.resolve(camelize(object)));
+  }
 
 
-export function fetchRepo(name) {
-  return this.call(`repos/${name}`);
-}
+  constructor(rootUrl) {
+    this.rootUrl = rootUrl;
+  }
 
-export function fetchContributors(repo) {
-  return this.call(`repos/${repo}/contributors`);
-}
-
-export function fetchLanguages(repo) {
-  return this.call(`repos/${repo}/languages`);
-}
-
-export function fetchPulls(repo) {
-  return this.call(`repos/${repo}/pulls?sort=popularity`);
+  call(resource, params, rootUrl = this.rootUrl) {
+    return fetch(GitHubApi.prepareUrl(resource, params, rootUrl));
+  }
 }

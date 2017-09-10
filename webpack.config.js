@@ -7,7 +7,7 @@ const HtmlPlugin = require('html-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 
 const webpackConfig = {
-  entry: ['babel-polyfill', './index.js'],
+  entry: ['./index.js'],
 
   output: {
     filename: 'js/app.js',

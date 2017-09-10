@@ -2,12 +2,12 @@ function ready() {
   return true;
 }
 
-function owner({ data }) {
+function owner(data) {
   return data.owner && data.repos &&
     (typeof data.owner === 'object') && (typeof data.repos === 'object');
 }
 
-function dialog({ data }) {
+function dialog(data) {
   return data.dialog;
 }
 
